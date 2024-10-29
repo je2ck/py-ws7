@@ -5,6 +5,7 @@ Module to work with Angstrom WS7 wavelength meter
 import argparse
 import ctypes, os, sys, random, time
 
+
 class WavelengthMeter:
 
     def __init__(self, dllpath="C:\Windows\System32\wlmData.dll", debug=False):
@@ -23,7 +24,7 @@ class WavelengthMeter:
 
     def GetExposureMode(self):
         if not self.debug:
-            return (self.dll.GetExposureMode(ctypes.c_bool(0))==1)
+            return self.dll.GetExposureMode(ctypes.c_bool(0)) == 1
         else:
             return True
 
@@ -37,10 +38,19 @@ class WavelengthMeter:
         if not self.debug:
             return self.dll.GetWavelengthNum(ctypes.c_long(channel), ctypes.c_double(0))
         else:
-            wavelengths = [460.8618, 689.2643, 679.2888, 707.2016, 460.8618*2, 0, 0, 0]
-            if channel>5:
+            wavelengths = [
+                460.8618,
+                689.2643,
+                679.2888,
+                707.2016,
+                460.8618 * 2,
+                0,
+                0,
+                0,
+            ]
+            if channel > 5:
                 return 0
-            return wavelengths[channel-1] + channel * random.uniform(0,0.0001)
+            return wavelengths[channel - 1] + channel * random.uniform(0, 0.0001)
 
     def GetFrequency(self, channel=1):
         if not self.debug:
@@ -53,41 +63,58 @@ class WavelengthMeter:
             "debug": self.debug,
             "wavelength": self.GetWavelength(),
             "frequency": self.GetFrequency(),
-            "exposureMode": self.GetExposureMode()
+            "exposureMode": self.GetExposureMode(),
         }
 
     @property
     def wavelengths(self):
-        return [self.GetWavelength(i+1) for i in range(8)]
+        return [self.GetWavelength(i + 1) for i in range(8)]
 
     @property
     def wavelength(self):
         return self.GetWavelength(1)
 
     @property
+    def exposure(self):
+        return self.GetExposureMode()
+
+    @property
     def switcher_mode(self):
         if not self.debug:
-        	return self.dll.GetSwitcherMode(ctypes.c_long(0))
+            return self.dll.GetSwitcherMode(ctypes.c_long(0))
         else:
             return 0
 
     @switcher_mode.setter
     def switcher_mode(self, mode):
         if not self.debug:
-        	self.dll.SetSwitcherMode(ctypes.c_long(int(mode)))
+            self.dll.SetSwitcherMode(ctypes.c_long(int(mode)))
         else:
             pass
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
 
     # command line arguments parsing
-    parser = argparse.ArgumentParser(description='Reads out wavelength values from the High Finesse Angstrom WS7 wavemeter.')
-    parser.add_argument('--debug', dest='debug', action='store_const',
-                        const=True, default=False,
-                        help='runs the script in debug mode simulating wavelength values')
-    parser.add_argument('channels', metavar='ch', type=int, nargs='*',
-                        help='channel to get the wavelength, by default all channels from 1 to 8',
-                        default=range(1,8))
+    parser = argparse.ArgumentParser(
+        description="Reads out wavelength values from the High Finesse Angstrom WS7 wavemeter."
+    )
+    parser.add_argument(
+        "--debug",
+        dest="debug",
+        action="store_const",
+        const=True,
+        default=False,
+        help="runs the script in debug mode simulating wavelength values",
+    )
+    parser.add_argument(
+        "channels",
+        metavar="ch",
+        type=int,
+        nargs="*",
+        help="channel to get the wavelength, by default all channels from 1 to 8",
+        default=range(1, 8),
+    )
 
     args = parser.parse_args()
 
@@ -106,4 +133,3 @@ if __name__ == '__main__':
     # print(wlm.wavelengths)
 
     # wlm.switcher_mode = old_mode
-
