@@ -62,6 +62,11 @@ class ExposureHandler(tornado.web.RequestHandler):
         self.write("Expousure mode: %d" % wlmeter.exposure)
 
 
+class PatternHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Pattern data: %d" % wlmeter.pattern)
+
+
 class IndexHandler(tornado.web.RequestHandler):
     """Renders index.html page"""
 
@@ -83,6 +88,7 @@ def make_app(config):
             (r"%s/api/wave/" % config["root"], WaveLengthHandler),
             (r"%s/api/wave/(\d)/" % config["root"], WaveLengthHandler),
             (r"%s/api/exp/" % config["root"], ExposureHandler),
+            (r"%s/api/pat/" % config["root"], PatternHandler),
             (r"%s/ws/" % config["root"], WsHandler),
             (
                 r"%s/static/(.*)" % config["root"],

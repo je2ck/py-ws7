@@ -58,6 +58,48 @@ class WavelengthMeter:
         else:
             return 38434900
 
+    def GetPatternData(self, channel=None, index=0):
+        """
+        Gets pattern data from the wavelength meter, with dynamic array allocation.
+        Args:
+            channel (int): Channel number to query.
+            index (int): Specific array identifier.
+
+        Returns:
+            Tuple: (result code, list of DWORD values from PArray)
+        """
+        if not self.debug:
+            item_count = self.dll.GetPatternItemCount(ctypes.c_long(index))
+            item_size = self.dll.GetPatternItemSize(ctypes.c_long(index))
+            # If no valid data is available, return an empty result
+            if item_count == 0 or item_size == 0:
+                return 0, []
+
+            # Select the appropriate ctypes data type based on item size
+            if item_size == 2:
+                ctype = ctypes.c_ushort
+            elif item_size == 4:
+                ctype = ctypes.c_ulong
+            elif item_size == 8:
+                ctype = ctypes.c_double
+            else:
+                raise ValueError(
+                    "Unsupported item size returned from GetPatternItemSize."
+                )
+
+            # Allocate an array of the selected type with the item count
+            p_array = (ctype * item_count)()
+
+            # Call the DLL function
+            result = self.dll.GetPatternDataNum(
+                ctypes.c_long(channel), ctypes.c_long(index), p_array
+            )
+
+            # Convert ctypes array to a Python list for easy access
+            return result, list(p_array)
+        else:
+            return 0, [random.randint(0, 1000) for _ in range(10)]  # Example debug data
+
     def GetAll(self):
         return {
             "debug": self.debug,
@@ -77,6 +119,10 @@ class WavelengthMeter:
     @property
     def exposure(self):
         return self.GetExposureMode()
+
+    @property
+    def pattern(self):
+        return self.GetPatternData()
 
     @property
     def switcher_mode(self):
