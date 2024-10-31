@@ -64,7 +64,8 @@ class ExposureHandler(tornado.web.RequestHandler):
 
 class PatternHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("Pattern data: %d" % wlmeter.pattern)
+        self.set_header("Content-Type", "application/json")
+        self.write(json.dumps(wlmeter.pattern))
 
 
 class IndexHandler(tornado.web.RequestHandler):

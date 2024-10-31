@@ -58,7 +58,7 @@ class WavelengthMeter:
         else:
             return 38434900
 
-    def GetPatternData(self, channel=None, index=0):
+    def GetPatternData(self, channel=1, index=1):
         """
         Gets pattern data from the wavelength meter, with dynamic array allocation.
         Args:
@@ -90,6 +90,7 @@ class WavelengthMeter:
             # Allocate an array of the selected type with the item count
             p_array = (ctype * item_count)()
 
+            self.dll.SetPattern(ctypes.c_long(index), ctypes.c_long(0))
             # Call the DLL function
             result = self.dll.GetPatternDataNum(
                 ctypes.c_long(channel), ctypes.c_long(index), p_array
