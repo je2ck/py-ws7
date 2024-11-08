@@ -62,6 +62,11 @@ class ExposureHandler(tornado.web.RequestHandler):
         self.write("Expousure mode: %d" % wlmeter.exposure)
 
 
+class FrequencyHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Frequency: %d" % wlmeter.frequency)
+
+
 class PatternHandler(tornado.web.RequestHandler):
     def get(self):
         self.set_header("Content-Type", "application/json")
@@ -90,6 +95,7 @@ def make_app(config):
             (r"%s/api/wave/(\d)/" % config["root"], WaveLengthHandler),
             (r"%s/api/exp/" % config["root"], ExposureHandler),
             (r"%s/api/pat/" % config["root"], PatternHandler),
+            (r"%s/api/freq/" % config["root"], FrequencyHandler),
             (r"%s/ws/" % config["root"], WsHandler),
             (
                 r"%s/static/(.*)" % config["root"],

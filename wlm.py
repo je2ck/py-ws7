@@ -118,6 +118,10 @@ class WavelengthMeter:
         return self.GetWavelength(1)
 
     @property
+    def frequency(self):
+        return self.GetFrequency(1)
+
+    @property
     def exposure(self):
         return self.GetExposureMode()
 
