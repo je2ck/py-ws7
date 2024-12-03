@@ -90,7 +90,7 @@ class WavelengthMeter:
             # Allocate an array of the selected type with the item count
             p_array = (ctype * item_count)()
 
-            self.dll.SetPattern(ctypes.c_long(index), ctypes.c_long(0))
+            self.dll.SetPattern(ctypes.c_long(index), ctypes.c_long(1))
             # Call the DLL function
             result = self.dll.GetPatternDataNum(
                 ctypes.c_long(channel), ctypes.c_long(index), p_array
