@@ -64,7 +64,7 @@ class ExposureHandler(tornado.web.RequestHandler):
 
 class FrequencyHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write("Frequency: %d" % wlmeter.frequency)
+        self.write("Frequency: %.8f" % wlmeter.frequency)
 
 
 class PatternHandler(tornado.web.RequestHandler):
