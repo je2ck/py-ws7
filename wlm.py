@@ -58,7 +58,7 @@ class WavelengthMeter:
         else:
             return 38434900
 
-    def GetPatternData(self, channel=1, index=1):
+    def GetPatternData(self, channel=1, index=0):
         """
         Gets pattern data from the wavelength meter, with dynamic array allocation.
         Args:
