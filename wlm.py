@@ -21,6 +21,44 @@ class WavelengthMeter:
             self.dll.GetWavelengthNum.restype = ctypes.c_double
             self.dll.GetFrequencyNum.restype = ctypes.c_double
             self.dll.GetSwitcherMode.restype = ctypes.c_long
+            self.dll.WaitForWLMEvent.restype = ctypes.c_long
+
+            self.instantiate_wlm()
+        else:
+            self.dll = None
+
+    def instantiate_wlm(self):
+        """
+        Check if WLM server application is running
+        """
+        if self.dll:
+            result = self.dll.Instantiate(0, 0, 0, 0)
+            if result > 0:
+                print("Wavelength Meter is active.")
+            else:
+                print("Wavelength Meter is NOT active or could not be found.")
+
+    def wait_for_event(self):
+        """
+        Wait for new measurement data using WaitForWLMEvent.
+        Returns None if no new data is available.
+        """
+        if self.dll:
+            mode = ctypes.c_long()
+            intval = ctypes.c_long()
+            dblval = ctypes.c_double()
+
+            result = self.dll.WaitForWLMEvent(
+                ctypes.byref(mode), ctypes.byref(intval), ctypes.byref(dblval)
+            )
+            return result
+            # if result > 0:
+            #     return {"mode": mode.value, "int_value": intval.value, "dbl_value": dblval.value}
+            # elif result == -1:
+            #     print("Timeout: No new data available.")
+            # elif result == -2:
+            #     print("Error: Unknown event or error occurred.")
+        return None
 
     def GetExposureMode(self):
         if not self.debug:
@@ -108,6 +146,10 @@ class WavelengthMeter:
             "frequency": self.GetFrequency(),
             "exposureMode": self.GetExposureMode(),
         }
+
+    @property
+    def check_status(self):
+        return self.wait_for_event()
 
     @property
     def wavelengths(self):

@@ -40,6 +40,14 @@ class WsHandler(tornado.websocket.WebSocketHandler):
         return True
 
 
+class WLMStatusHandler(tornado.web.RequestHandler):
+    """Creates simple HTTP API if you don't like websockets"""
+
+    def get(self, channel=None):
+        w = wlmeter.check_status
+        self.write("%d" % w)
+
+
 class WaveLengthHandler(tornado.web.RequestHandler):
     """Creates simple HTTP API if you don't like websockets"""
 
@@ -91,6 +99,7 @@ def make_app(config):
     return tornado.web.Application(
         [
             (r"%s/" % config["root"], IndexHandler),
+            (r"%s/api/status/" % config["root"], WLMStatusHandler),
             (r"%s/api/wave/" % config["root"], WaveLengthHandler),
             (r"%s/api/wave/(\d)/" % config["root"], WaveLengthHandler),
             (r"%s/api/exp/" % config["root"], ExposureHandler),
